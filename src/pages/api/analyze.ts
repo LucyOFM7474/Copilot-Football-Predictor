@@ -1,5 +1,6 @@
-// pages/api/analyze.ts
-export default async function handler(req, res) {
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { match } = req.body;
 
   const prompt = `
