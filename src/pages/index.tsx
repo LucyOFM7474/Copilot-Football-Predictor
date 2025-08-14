@@ -3,69 +3,60 @@ import { sendMessage } from '../utils/openai';
 
 export default function Home() {
   const [match, setMatch] = useState('');
-  const [analysis, setAnalysis] = useState('');
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setAnalysis('');
+    setResult('');
+
     try {
-      const response = await sendMessage(match);
-      setAnalysis(response);
+      const analysis = await sendMessage(match);
+      setResult(analysis);
     } catch (error) {
-      setAnalysis('A apărut o eroare la generarea analizei.');
+      setResult('A apărut o eroare. Încearcă din nou.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial', maxWidth: '800px', margin: 'auto' }}>
-      <h1>🔍 Analiză meci fotbal</h1>
-      <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
+    <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
+      <h1>Analiză Meci Fotbal ⚽</h1>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={match}
           onChange={(e) => setMatch(e.target.value)}
-          placeholder="Ex: Västerås SK vs Trelleborgs FF"
+          placeholder="Ex: Real Madrid vs Barcelona"
           style={{
-            width: '70%',
-            padding: '0.5rem',
-            fontSize: '1rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
+            width: '100%',
+            padding: '10px',
+            fontSize: '16px',
+            marginBottom: '10px',
           }}
+          required
         />
         <button
           type="submit"
-          disabled={loading || !match.trim()}
+          disabled={loading}
           style={{
-            marginLeft: '1rem',
-            padding: '0.5rem 1rem',
-            fontSize: '1rem',
+            padding: '10px 20px',
+            fontSize: '16px',
             backgroundColor: '#0070f3',
             color: 'white',
             border: 'none',
-            borderRadius: '4px',
             cursor: 'pointer',
           }}
         >
-          {loading ? 'Se generează...' : 'Analizează'}
+          {loading ? 'Se generează...' : 'Generează analiza'}
         </button>
       </form>
 
-      {analysis && (
-        <div
-          style={{
-            backgroundColor: '#f9f9f9',
-            padding: '1rem',
-            borderRadius: '8px',
-            whiteSpace: 'pre-wrap',
-            boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          }}
-        >
-          <h2>📋 Rezultatul analizei:</h2>
-          <p>{analysis}</p>
+      {result && (
+        <div style={{ marginTop: 30, whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: 20 }}>
+          {result}
         </div>
       )}
     </div>
