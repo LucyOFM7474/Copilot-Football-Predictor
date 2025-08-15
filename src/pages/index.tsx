@@ -1,64 +1,38 @@
 import { useState } from 'react';
-import { sendMessage } from '../utils/openai';
+import AnalysisResult from '../components/AnalysisResult';
 
 export default function Home() {
   const [match, setMatch] = useState('');
-  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAnalyze = async () => {
     setLoading(true);
-    setResult('');
-
-    try {
-      const analysis = await sendMessage(match);
-      setResult(analysis);
-    } catch (error) {
-      setResult('A apărut o eroare. Încearcă din nou.');
-    } finally {
-      setLoading(false);
-    }
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ match }),
+    });
+    const data = await res.json();
+    setResult(data.result);
+    setLoading(false);
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto', padding: 20 }}>
-      <h1>Analiză Meci Fotbal ⚽</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={match}
-          onChange={(e) => setMatch(e.target.value)}
-          placeholder="Ex: Real Madrid vs Barcelona"
-          style={{
-            width: '100%',
-            padding: '10px',
-            fontSize: '16px',
-            marginBottom: '10px',
-          }}
-          required
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            backgroundColor: '#0070f3',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          {loading ? 'Se generează...' : 'Generează analiza'}
-        </button>
-      </form>
+    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
+      <h1>Analiză Meciuri ⚽</h1>
+      <input
+        type="text"
+        value={match}
+        onChange={(e) => setMatch(e.target.value)}
+        placeholder="Ex: Dinamo vs UTA"
+        style={{ width: '300px', padding: '0.5rem', marginRight: '1rem' }}
+      />
+      <button onClick={handleAnalyze} disabled={loading}>
+        {loading ? 'Se generează...' : 'Generează analiza'}
+      </button>
 
-      {result && (
-        <div style={{ marginTop: 30, whiteSpace: 'pre-wrap', background: '#f9f9f9', padding: 20 }}>
-          {result}
-        </div>
-      )}
+      {result && <AnalysisResult result={result} />}
     </div>
   );
 }
