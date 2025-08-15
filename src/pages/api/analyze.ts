@@ -4,20 +4,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { match } = req.body;
 
   const prompt = `
-Vreau o analiză detaliată a meciului de fotbal "${match}", în formatul următor:
+Analizează meciul de fotbal "${match}" în formatul strict de mai jos. Nu inventa scoruri sau statistici dacă nu sunt disponibile. Fii concis, clar și structurat. Folosește simboluri precum ✅, ⚠️, ❌ unde e cazul.
 
-1. Surse & predicții externe (cote reale, site-uri de pariuri, tendințe)
-2. Istoric direct (H2H) – scoruri exacte, cine a câștigat
-3. Forma echipei gazdă – ultimele 5 meciuri, scoruri, adversari
-4. Forma echipei oaspete – ultimele 5 meciuri, scoruri, adversari
-5. Clasament & motivație – poziție în ligă, obiective
-6. Statistici goluri – medie goluri marcate/primite
-7. Statistici cornere – medie cornere pe meci
-8. Jucători cheie – nume, rol, formă recentă
-9. Predicție scor – realistă, pe baza datelor
-10. Recomandări pariuri – 1X2, GG/NG, cornere, under/over
+1. Surse & Predicții:
+- Include surse precum SportyTrader, Forebet, Predictz.
+- Folosește ✅ pentru consens, ⚠️ pentru opinii parțiale.
 
-⚠️ Nu inventa scoruri sau statistici. Folosește date reale sau, dacă nu sunt disponibile, spune clar că nu sunt. Fii concis, fără repetiții. Formatul trebuie să fie clar, cu puncte numerotate.`;
+2. Medie Ponderată a Predicțiilor:
+- Calculează media estimată a scorului și tendinței (1X2, GG, under/over).
+
+3. Impactul pe Pronostic:
+- Forma echipelor, absențe, motivație.
+
+4. Forma Recentă:
+- Ultimele 5 meciuri, scoruri, adversari.
+
+5. Situația Accidentărilor și Suspendărilor:
+- Jucători cheie lipsă, impact.
+
+6. Golgheterii Echipei:
+- Cine marchează, câte goluri, câte din penalty.
+
+7. Cartonașe, Cornere, Posesie:
+- Medii pe meci, tendințe.
+
+8. Predicția Finală Ajustată:
+- Scor estimat realist + 3–5 recomandări clare (1X2, under/over, BTTS, cornere).
+
+9. Evaluări Comparabile:
+- Ce spun sursele de încredere, pariorii profesioniști.
+
+10. Știri de Ultimă Oră și Zvornuri:
+- Absențe, motivații, posibile aranjamente.
+
+⚠️ Nu folosi fraze goale. Nu repeta idei. Formatul trebuie să fie clar, cu puncte numerotate.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
